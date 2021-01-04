@@ -58,3 +58,21 @@ func TestGreaterThanEqual(t *testing.T) {
 	is.True(strings.Contains(c.Statement, "name = '?'"))
 	is.Equal(len(c.Variables), 2)
 }
+
+func TestLessThan(t *testing.T) {
+	is := is.New(t)
+	v := Values{"price__lt": []string{"15"}, "name": []string{"book"}}
+	c, _ := Clausify(v)
+	is.True(strings.Contains(c.Statement, "price < ?"))
+	is.True(strings.Contains(c.Statement, "name = '?'"))
+	is.Equal(len(c.Variables), 2)
+}
+
+func TestLessThanEqual(t *testing.T) {
+	is := is.New(t)
+	v := Values{"price__lte": []string{"15"}, "name": []string{"book"}}
+	c, _ := Clausify(v)
+	is.True(strings.Contains(c.Statement, "price <= ?"))
+	is.True(strings.Contains(c.Statement, "name = '?'"))
+	is.Equal(len(c.Variables), 2)
+}

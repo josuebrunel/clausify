@@ -59,6 +59,14 @@ func gte(k, v string) (s string) {
 	return op(Operator{NumExpression: " >= ?"}, k, v)
 }
 
+func lt(k, v string) (s string) {
+	return op(Operator{NumExpression: " < ?"}, k, v)
+}
+
+func lte(k, v string) (s string) {
+	return op(Operator{NumExpression: " <= ?"}, k, v)
+}
+
 func getOperator(key string) (string, string) {
 	op := strings.Split(key, separator)
 	if len(op) == 2 {
@@ -72,6 +80,8 @@ var operators = map[string]opfunc{
 	"neq": neq,
 	"gt":  gt,
 	"gte": gte,
+	"lt":  lt,
+	"lte": lte,
 }
 
 // Clause describe a WHERE Clause statement
