@@ -33,16 +33,26 @@ func eq(k, v string) (s string) {
 	return
 }
 
-func getOperator(key string) string {
+func neq(k, v string) (s string) {
+	if isNumeric(v) {
+		s = concat(k, " != ?")
+	} else {
+		s = concat(k, " != '?'")
+	}
+	return
+}
+
+func getOperator(key string) (string, string) {
 	op := strings.Split(key, seperator)
 	if len(op) == 2 {
-		return op[1]
+		return op[0], op[1]
 	}
-	return "eq"
+	return key, "eq"
 }
 
 var operators = map[string]opfunc{
-	"eq": eq,
+	"eq":  eq,
+	"neq": neq,
 }
 
 // Clause describe a WHERE Clause statement
@@ -64,7 +74,7 @@ func (c *Clause) AddCondition(s string, v interface{}) {
 func Clausify(q map[string][]string) Clause {
 	c := Clause{}
 	for k, v := range q {
-		op := getOperator(k)
+		k, op := getOperator(k)
 		c.AddCondition(operators[op](k, v[0]), v[0])
 		c.Variables = append(c.Variables, v[0])
 	}
