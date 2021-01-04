@@ -1,0 +1,43 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+    test:
+        strategy:
+          matrix:
+            go-version: [1.13.x, 1.14.x, 1.15.x]
+            os: [ubuntu-latest,]
+        runs-on: ${{ matrix.os }}
+        steps:
+        - name: Install Go
+          uses: actions/setup-go@v2
+          with:
+            go-version: ${{ matrix.go-version }}
+        - name: Checkout code
+          uses: actions/checkout@v2
+        - name: Unshallow git checkout
+          run:  git fetch --prune --unshallow
+        - name: Run tests
+          run: go test -v -covermode=count -coverprofile=coverage.out ./...
+        - name: Convert coverage to lcov
+          uses: jandelgado/gcov2lcov-action@v1.0.5
+        - name: Report coverage
+          uses: coverallsapp/github-action@master
+          with:
+              github-token: ${{ secrets.GITHUB_TOKEN }}
+              path-to-lcov: coverage.lcov
+        - name: Check lint
+          run: |
+              go get -u golang.org/x/lint/golint
+              golint  ./...
+    doc:
+        name: Renew documentation
+        runs-on: ubuntu-latest
+        steps:
+        - name: Pull new module version
+          run: go get -u github.com/josuebrunel/clausify
+          env:
+            GOPROXY: https://proxy.golang.org
+            GO111MODULE: on
+
