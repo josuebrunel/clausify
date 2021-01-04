@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const seperator string = "__"
+const separator string = "__"
 
 type opfunc func(k, v string) string
 
@@ -47,7 +47,7 @@ func neq(k, v string) (s string) {
 }
 
 func getOperator(key string) (string, string) {
-	op := strings.Split(key, seperator)
+	op := strings.Split(key, separator)
 	if len(op) == 2 {
 		return op[0], op[1]
 	}
