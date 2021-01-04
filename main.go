@@ -1,6 +1,7 @@
 package clausify
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
@@ -8,6 +9,9 @@ import (
 const seperator string = "__"
 
 type opfunc func(k, v string) string
+
+// ErrInvalidOperator describes an invalid operator error
+var ErrInvalidOperator = errors.New("Invalid operator")
 
 func isNumeric(v string) bool {
 	if _, err := strconv.Atoi(v); err != nil {
@@ -71,12 +75,15 @@ func (c *Clause) AddCondition(s string, v interface{}) {
 }
 
 // Clausify takes an url.Query and turns it into an SQL Statement
-func Clausify(q map[string][]string) Clause {
+func Clausify(q map[string][]string) (Clause, error) {
 	c := Clause{}
 	for k, v := range q {
 		k, op := getOperator(k)
+		if _, ok := operators[op]; !ok {
+			return c, ErrInvalidOperator
+		}
 		c.AddCondition(operators[op](k, v[0]), v[0])
 		c.Variables = append(c.Variables, v[0])
 	}
-	return c
+	return c, nil
 }
