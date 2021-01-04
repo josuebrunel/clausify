@@ -13,6 +13,12 @@ type opfunc func(k, v string) string
 // ErrInvalidOperator describes an invalid operator error
 var ErrInvalidOperator = errors.New("Invalid operator")
 
+// Operator describes operator experessions
+type Operator struct {
+	Expression    string
+	NumExpression string
+}
+
 func isNumeric(v string) bool {
 	if _, err := strconv.Atoi(v); err != nil {
 		return false
@@ -28,22 +34,29 @@ func concat(ss ...string) string {
 	return sb.String()
 }
 
-func eq(k, v string) (s string) {
+func op(o Operator, k, v string) (s string) {
 	if isNumeric(v) {
-		s = concat(k, " = ?")
+		s = concat(k, o.NumExpression)
 	} else {
-		s = concat(k, " = '?'")
+		s = concat(k, o.Expression)
 	}
 	return
 }
 
+func eq(k, v string) (s string) {
+	return op(Operator{Expression: " = '?'", NumExpression: " = ?"}, k, v)
+}
+
 func neq(k, v string) (s string) {
-	if isNumeric(v) {
-		s = concat(k, " != ?")
-	} else {
-		s = concat(k, " != '?'")
-	}
-	return
+	return op(Operator{Expression: " != '?'", NumExpression: " != ?"}, k, v)
+}
+
+func gt(k, v string) (s string) {
+	return op(Operator{NumExpression: " > ?"}, k, v)
+}
+
+func gte(k, v string) (s string) {
+	return op(Operator{NumExpression: " >= ?"}, k, v)
 }
 
 func getOperator(key string) (string, string) {
@@ -57,6 +70,8 @@ func getOperator(key string) (string, string) {
 var operators = map[string]opfunc{
 	"eq":  eq,
 	"neq": neq,
+	"gt":  gt,
+	"gte": gte,
 }
 
 // Clause describe a WHERE Clause statement

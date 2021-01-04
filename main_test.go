@@ -40,3 +40,21 @@ func TestNotEqual(t *testing.T) {
 	is.Equal(strings.Contains(c.Statement, "age != ?"), true)
 	is.Equal(len(c.Variables), 2)
 }
+
+func TestGreaterThan(t *testing.T) {
+	is := is.New(t)
+	v := Values{"price__gt": []string{"15"}, "name": []string{"book"}}
+	c, _ := Clausify(v)
+	is.True(strings.Contains(c.Statement, "price > ?"))
+	is.True(strings.Contains(c.Statement, "name = '?'"))
+	is.Equal(len(c.Variables), 2)
+}
+
+func TestGreaterThanEqual(t *testing.T) {
+	is := is.New(t)
+	v := Values{"price__gte": []string{"15"}, "name": []string{"book"}}
+	c, _ := Clausify(v)
+	is.True(strings.Contains(c.Statement, "price >= ?"))
+	is.True(strings.Contains(c.Statement, "name = '?'"))
+	is.Equal(len(c.Variables), 2)
+}
