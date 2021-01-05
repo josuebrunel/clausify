@@ -1,4 +1,4 @@
-[![test](https://github.com/josuebrunel/clausify/actions?query=workflow%3Atest)](https://github.com/josuebrunel/clausify/workflows/test/badge.svg)
+[![test](https://github.com/josuebrunel/clausify/workflows/test/badge.svg)](https://github.com/josuebrunel/clausify/actions?query=workflow%3Atest)
 [![coverage](https://coveralls.io/repos/github/josuebrunel/clausify/badge.svg?branch=main)](https://coveralls.io/github/josuebrunel/clausify?branch=main)
 [![goreportcard](https://goreportcard.com/badge/github.com/josuebrunel/clausify)](https://goreportcard.com/report/github.com/josuebrunel/clausify)
 [![gopkg](https://pkg.go.dev/badge/github.com/josuebrunel/clausify.svg)](https://pkg.go.dev/github.com/josuebrunel/clausify)
