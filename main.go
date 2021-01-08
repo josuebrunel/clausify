@@ -87,6 +87,14 @@ func nin(k, v string) (s string) {
 	return op(Operator{Expression: " NOT IN (?)"}, k, v)
 }
 
+func between(k, v string) (s string) {
+	return op(Operator{Expression: " BETWEEN '?' AND '?'", NumExpression: " BETWEEN ? AND ?"}, k, v)
+}
+
+func nbetween(k, v string) (s string) {
+	return op(Operator{Expression: " NOT BETWEEN '?' AND '?'", NumExpression: " NOT BETWEEN ? AND ?"}, k, v)
+}
+
 func getOperator(key string) (string, string) {
 	op := strings.Split(key, separator)
 	if len(op) == 2 {
@@ -96,31 +104,33 @@ func getOperator(key string) (string, string) {
 }
 
 var operators = map[string]opfunc{
-	"eq":    eq,
-	"neq":   neq,
-	"gt":    gt,
-	"gte":   gte,
-	"lt":    lt,
-	"lte":   lte,
-	"like":  like,
-	"ilike": ilike,
-	"nlike": nlike,
-	"in":    in,
-	"nin":   nin,
+	"eq":       eq,
+	"neq":      neq,
+	"gt":       gt,
+	"gte":      gte,
+	"lt":       lt,
+	"lte":      lte,
+	"like":     like,
+	"ilike":    ilike,
+	"nlike":    nlike,
+	"in":       in,
+	"nin":      nin,
+	"between":  between,
+	"nbetween": nbetween,
 }
 
-// Clause describe a WHERE Clause statement
+// Clause describe a WHERE Clause and its conditions
 type Clause struct {
-	Statement string
-	Variables []interface{}
+	Conditions string
+	Variables  []interface{}
 }
 
 // AddCondition add a clause condition
 func (c *Clause) AddCondition(s string, v interface{}) {
-	if c.Statement == "" {
-		c.Statement = s
+	if c.Conditions == "" {
+		c.Conditions = s
 	} else {
-		c.Statement = concat(c.Statement, " AND ", s)
+		c.Conditions = concat(c.Conditions, " AND ", s)
 	}
 }
 

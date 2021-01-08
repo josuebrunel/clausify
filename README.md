@@ -6,7 +6,7 @@
 
 # Clausify
 
-*Clausify* helps you turn you *url query strings* into *SQL Where clause statement*
+*Clausify* helps you turn you *url query strings* into *SQL Where clause*
 It supports SQL Comparison operators and some logical operators
 
 ## Installation
@@ -32,7 +32,7 @@ if err != nil {
     // do whatever
 }
 
-fmt.Printf("%s\n", c.Statement) // email like '?' AND age >= ? AND company = '?'
+fmt.Printf("%s\n", c.Conditions) // email like '?' AND age >= ? AND company = '?'
 fmt.Printf("%v\n", c.Variables) // ["@toto.com", 24, "toto"]
 ```
 
