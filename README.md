@@ -38,19 +38,18 @@ fmt.Printf("%v\n", c.Variables) // ["@toto.com", 24, "toto"]
 
 ## Supported operators
 
-| Query string filters                      | SQL Operator                                    |
+| Query string filters                      | SQL Operators                                   |
 |-------------------------------------------|-------------------------------------------------|
-| <element>=<value>                         | <element> **=** <value> OR <element> = '<value>'    |
-| <element>__neq=<value>                      | <element> **!=** <value> OR <element> != '<value>'  |
-| <element>__gt=<value>                      | <element> > <value>                             |
-| <element>__gte=<value>                    | <element> >= <value>                            |
-| <element>__lt=<value>                     | <element> < <value>                             |
-| <element>__lte=<value>                    | <element> <= <value>                            |
-| <element>__like=<value>                   | <element> LIKE '<value>'                        |
-| <element>__ilike=<value>                  | <element> ILIKE '<value>'                       |
-| <element>__nlike=<value>                  | <element> NOT LIKE '<value>'                    |
-| <element>__in=<value1>,<value2>,<valueN>  | <element> IN (<value1>, <value2>, <valueN>)     |
-| <element>__nin=<value1>,<value2>,<valueN> | <element> NOT IN (<value1>, <value2>, <valueN>) |
-| <element>__between=<left>,<right>         | <element> BETWEEN <left> AND <right>            |
-| <element>__nbetween=<left>,<right>        | <element> NOT BETWEEN <left> AND <right>        |
-
+| element=value                             | element **=** value OR element = 'value'        |
+| element__neq=value                        | element **!=** value OR element != 'value'      |
+| element__gt=value                         | element **>** value                             |
+| element__gte=value                        | element **>=** value                            |
+| element__lt=value                         | element **<** value                             |
+| element__lte=value                        | element **<=** value                            |
+| element__like=value                       | element **LIKE** 'value'                        |
+| element__ilike=value                      | element **ILIKE** 'value'                       |
+| element__nlike=value                      | element **NOT LIKE** 'value'                    |
+| element__in=value1,value2,valueN          | element **IN** (value1, value2, valueN)         |
+| element__nin=value1,value2,valueN         | element **NOT IN** (value1, value2, valueN)     |
+| element__between=left,right               | element **BETWEEN** left **AND** right          |
+| element__nbetween=left,right              | element **NOT BETWEEN** left **AND** right      |
