@@ -53,3 +53,39 @@ fmt.Printf("%v\n", c.Variables) // ["@toto.com", 24, "toto"]
 | element__nin=value1,value2,valueN         | element **NOT IN** (value1, value2, valueN)     |
 | element__between=left,right               | element **BETWEEN** left **AND** right          |
 | element__nbetween=left,right              | element **NOT BETWEEN** left **AND** right      |
+
+## Implement a custom Operator
+
+Use a struct with a **Lookup** method to implement a custom operator.
+
+```go
+import (
+    "github.com/josuebrunel/clausify"
+    "github.com/matryer/is"
+    "net/url"
+    "strings"
+    "testing"
+    "errors"
+)
+
+type MyOperator struct {
+	Separator string
+}
+
+func (m MyOperator) Lookup(k string, vv []string) (clause.Condition, error) {
+	op := strings.Split(k, m.Separator)
+	if op[1] == "<>" {
+		return clause.Condition{
+			Expression: clause.Concat(op[0], " <> ?"),
+			Variables:  []interface{}{vv[0]},
+		}, nil
+	}
+	return clause.Condition{}, errors.New("Invalid operator")
+}
+
+u, _ := url.Parse("https://httpbin.org/?id-<>=1")
+q := u.Query()
+c, _ := clausify.With(q, MyOperator{Separator: "-"})
+is.True(strings.Contains(c.Conditions, "id <> ?"))
+is.Equal(len(c.Variables), 1)
+```

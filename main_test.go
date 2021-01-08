@@ -1,6 +1,7 @@
 package clausify
 
 import (
+	"github.com/josuebrunel/clausify/clause"
 	"github.com/matryer/is"
 	"net/url"
 	"strings"
@@ -138,4 +139,27 @@ func TestNotBetween(t *testing.T) {
 	c, _ := Clausify(q)
 	is.True(strings.Contains(c.Conditions, " NOT BETWEEN ? AND ?"))
 	is.Equal(len(c.Variables), 3)
+}
+
+type MyOperator struct {
+	Separator string
+}
+
+func (m MyOperator) Lookup(k string, vv []string) (clause.Condition, error) {
+	op := strings.Split(k, m.Separator)
+	if op[1] == "<>" {
+		return clause.Condition{
+			Expression: clause.Concat(op[0], " <> ?"),
+			Variables:  []interface{}{vv[0]},
+		}, nil
+	}
+	return clause.Condition{}, nil
+}
+
+func TestCustomOperator(t *testing.T) {
+	is := is.New(t)
+	q := getURLQuery("https://httpbin.org/?id-<>=1")
+	c, _ := With(q, MyOperator{Separator: "-"})
+	is.True(strings.Contains(c.Conditions, "id <> ?"))
+	is.Equal(len(c.Variables), 1)
 }
