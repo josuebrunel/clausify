@@ -36,7 +36,7 @@ fmt.Printf("%s\n", c.Conditions) // email like '?' AND age >= ? AND company = '?
 fmt.Printf("%v\n", c.Variables) // ["@toto.com", 24, "toto"]
 ```
 
-## Supported operators
+## Supported operators by the operators.DefaultOperator
 
 | Query string filters                      | SQL Operators                                   |
 |-------------------------------------------|-------------------------------------------------|
