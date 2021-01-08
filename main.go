@@ -67,6 +67,18 @@ func lte(k, v string) (s string) {
 	return op(Operator{NumExpression: " <= ?"}, k, v)
 }
 
+func like(k, v string) (s string) {
+	return op(Operator{Expression: " LIKE '?'"}, k, v)
+}
+
+func ilike(k, v string) (s string) {
+	return op(Operator{Expression: " ILIKE '?'"}, k, v)
+}
+
+func nlike(k, v string) (s string) {
+	return op(Operator{Expression: " NOT LIKE '?'"}, k, v)
+}
+
 func getOperator(key string) (string, string) {
 	op := strings.Split(key, separator)
 	if len(op) == 2 {
@@ -76,12 +88,15 @@ func getOperator(key string) (string, string) {
 }
 
 var operators = map[string]opfunc{
-	"eq":  eq,
-	"neq": neq,
-	"gt":  gt,
-	"gte": gte,
-	"lt":  lt,
-	"lte": lte,
+	"eq":    eq,
+	"neq":   neq,
+	"gt":    gt,
+	"gte":   gte,
+	"lt":    lt,
+	"lte":   lte,
+	"like":  like,
+	"ilike": ilike,
+	"nlike": nlike,
 }
 
 // Clause describe a WHERE Clause statement

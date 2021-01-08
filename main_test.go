@@ -76,3 +76,34 @@ func TestLessThanEqual(t *testing.T) {
 	is.True(strings.Contains(c.Statement, "name = '?'"))
 	is.Equal(len(c.Variables), 2)
 }
+
+func TestLike(t *testing.T) {
+	is := is.New(t)
+	v := Values{"price__lte": []string{"15"}, "name__like": []string{"book"}}
+	c, _ := Clausify(v)
+	is.True(strings.Contains(c.Statement, "price <= ?"))
+	is.True(strings.Contains(c.Statement, "name LIKE '?'"))
+	is.Equal(len(c.Variables), 2)
+}
+
+func TestILike(t *testing.T) {
+	is := is.New(t)
+	v := Values{
+		"price__lte":  []string{"15"},
+		"name__ilike": []string{"book"},
+		"category":    []string{"fruits"},
+	}
+	c, _ := Clausify(v)
+	is.True(strings.Contains(c.Statement, "price <= ?"))
+	is.True(strings.Contains(c.Statement, "name ILIKE '?'"))
+	is.Equal(len(c.Variables), 3)
+}
+
+func TestNotLike(t *testing.T) {
+	is := is.New(t)
+	v := Values{"price__lte": []string{"15"}, "name__nlike": []string{"book"}}
+	c, _ := Clausify(v)
+	is.True(strings.Contains(c.Statement, "price <= ?"))
+	is.True(strings.Contains(c.Statement, "name NOT LIKE '?'"))
+	is.Equal(len(c.Variables), 2)
+}
