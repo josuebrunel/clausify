@@ -8,15 +8,22 @@ import (
 
 const separator string = "__"
 
-type opfunc func(k, v string) string
+type opfunc func(k string, vv []string) (c Condition)
 
 // ErrInvalidOperator describes an invalid operator error
 var ErrInvalidOperator = errors.New("Invalid operator")
 
-// Operator describes operator experessions
-type Operator struct {
+// OPExpression describe expression of an operator
+type OPExpression struct {
+	Name          string
 	Expression    string
 	NumExpression string
+}
+
+// Condition describes a where clause condition
+type Condition struct {
+	Expression string
+	Variables  []interface{}
 }
 
 func isNumeric(v string) bool {
@@ -34,65 +41,78 @@ func concat(ss ...string) string {
 	return sb.String()
 }
 
-func op(o Operator, k, v string) (s string) {
-	if isNumeric(v) {
-		s = concat(k, o.NumExpression)
-	} else {
-		s = concat(k, o.Expression)
+func op(o OPExpression, k string, vv []string) (c Condition) {
+	c = Condition{}
+	if strings.Contains(o.Name, "between") {
+		vv = strings.Split(vv[0], ",")
 	}
-	return
+	for _, v := range vv {
+		if isNumeric(v) {
+			c.Expression = concat(k, o.NumExpression)
+		} else {
+			c.Expression = concat(k, o.Expression)
+		}
+		if strings.Contains(o.Name, "in") {
+			if len(c.Variables) == 0 {
+				c.Variables = append(c.Variables, vv)
+			}
+		} else {
+			c.Variables = append(c.Variables, v)
+		}
+	}
+	return c
 }
 
-func eq(k, v string) (s string) {
-	return op(Operator{Expression: " = '?'", NumExpression: " = ?"}, k, v)
+func eq(k string, vv []string) (c Condition) {
+	return op(OPExpression{Expression: " = '?'", NumExpression: " = ?"}, k, vv)
 }
 
-func neq(k, v string) (s string) {
-	return op(Operator{Expression: " != '?'", NumExpression: " != ?"}, k, v)
+func neq(k string, vv []string) (c Condition) {
+	return op(OPExpression{Expression: " != '?'", NumExpression: " != ?"}, k, vv)
 }
 
-func gt(k, v string) (s string) {
-	return op(Operator{NumExpression: " > ?"}, k, v)
+func gt(k string, vv []string) (c Condition) {
+	return op(OPExpression{NumExpression: " > ?"}, k, vv)
 }
 
-func gte(k, v string) (s string) {
-	return op(Operator{NumExpression: " >= ?"}, k, v)
+func gte(k string, vv []string) (c Condition) {
+	return op(OPExpression{NumExpression: " >= ?"}, k, vv)
 }
 
-func lt(k, v string) (s string) {
-	return op(Operator{NumExpression: " < ?"}, k, v)
+func lt(k string, vv []string) (c Condition) {
+	return op(OPExpression{NumExpression: " < ?"}, k, vv)
 }
 
-func lte(k, v string) (s string) {
-	return op(Operator{NumExpression: " <= ?"}, k, v)
+func lte(k string, vv []string) (c Condition) {
+	return op(OPExpression{NumExpression: " <= ?"}, k, vv)
 }
 
-func like(k, v string) (s string) {
-	return op(Operator{Expression: " LIKE '?'"}, k, v)
+func like(k string, vv []string) (c Condition) {
+	return op(OPExpression{Expression: " LIKE '?'"}, k, vv)
 }
 
-func ilike(k, v string) (s string) {
-	return op(Operator{Expression: " ILIKE '?'"}, k, v)
+func ilike(k string, vv []string) (c Condition) {
+	return op(OPExpression{Expression: " ILIKE '?'"}, k, vv)
 }
 
-func nlike(k, v string) (s string) {
-	return op(Operator{Expression: " NOT LIKE '?'"}, k, v)
+func nlike(k string, vv []string) (c Condition) {
+	return op(OPExpression{Expression: " NOT LIKE '?'"}, k, vv)
 }
 
-func in(k, v string) (s string) {
-	return op(Operator{Expression: " IN (?)"}, k, v)
+func in(k string, vv []string) (c Condition) {
+	return op(OPExpression{Name: "in", Expression: " IN (?)"}, k, vv)
 }
 
-func nin(k, v string) (s string) {
-	return op(Operator{Expression: " NOT IN (?)"}, k, v)
+func nin(k string, vv []string) (c Condition) {
+	return op(OPExpression{Name: "nin", Expression: " NOT IN (?)"}, k, vv)
 }
 
-func between(k, v string) (s string) {
-	return op(Operator{Expression: " BETWEEN '?' AND '?'", NumExpression: " BETWEEN ? AND ?"}, k, v)
+func between(k string, vv []string) (c Condition) {
+	return op(OPExpression{Name: "between", Expression: " BETWEEN '?' AND '?'", NumExpression: " BETWEEN ? AND ?"}, k, vv)
 }
 
-func nbetween(k, v string) (s string) {
-	return op(Operator{Expression: " NOT BETWEEN '?' AND '?'", NumExpression: " NOT BETWEEN ? AND ?"}, k, v)
+func nbetween(k string, vv []string) (c Condition) {
+	return op(OPExpression{Name: "nbetween", Expression: " NOT BETWEEN '?' AND '?'", NumExpression: " NOT BETWEEN ? AND ?"}, k, vv)
 }
 
 func getOperator(key string) (string, string) {
@@ -126,15 +146,18 @@ type Clause struct {
 }
 
 // AddCondition add a clause condition
-func (c *Clause) AddCondition(s string, v interface{}) {
+func (c *Clause) AddCondition(cond Condition) {
 	if c.Conditions == "" {
-		c.Conditions = s
+		c.Conditions = cond.Expression
 	} else {
-		c.Conditions = concat(c.Conditions, " AND ", s)
+		c.Conditions = concat(c.Conditions, " AND ", cond.Expression)
+	}
+	for v := range cond.Variables {
+		c.Variables = append(c.Variables, v)
 	}
 }
 
-// Clausify takes an url.Query and turns it into an SQL Statement
+// Clausify takes an url.Query and turns it into a Where clause conditions
 func Clausify(q map[string][]string) (Clause, error) {
 	c := Clause{}
 	for k, v := range q {
@@ -142,8 +165,7 @@ func Clausify(q map[string][]string) (Clause, error) {
 		if _, ok := operators[op]; !ok {
 			return c, ErrInvalidOperator
 		}
-		c.AddCondition(operators[op](k, v[0]), v[0])
-		c.Variables = append(c.Variables, v[0])
+		c.AddCondition(operators[op](k, v))
 	}
 	return c, nil
 }
