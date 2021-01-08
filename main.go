@@ -79,6 +79,14 @@ func nlike(k, v string) (s string) {
 	return op(Operator{Expression: " NOT LIKE '?'"}, k, v)
 }
 
+func in(k, v string) (s string) {
+	return op(Operator{Expression: " IN (?)"}, k, v)
+}
+
+func nin(k, v string) (s string) {
+	return op(Operator{Expression: " NOT IN (?)"}, k, v)
+}
+
 func getOperator(key string) (string, string) {
 	op := strings.Split(key, separator)
 	if len(op) == 2 {
@@ -97,6 +105,8 @@ var operators = map[string]opfunc{
 	"like":  like,
 	"ilike": ilike,
 	"nlike": nlike,
+	"in":    in,
+	"nin":   nin,
 }
 
 // Clause describe a WHERE Clause statement

@@ -107,3 +107,19 @@ func TestNotLike(t *testing.T) {
 	is.True(strings.Contains(c.Statement, "name NOT LIKE '?'"))
 	is.Equal(len(c.Variables), 2)
 }
+
+func TestIn(t *testing.T) {
+	is := is.New(t)
+	q := getURLQuery("https://httpbin.org/?id__in=2,4,6")
+	c, _ := Clausify(q)
+	is.True(strings.Contains(c.Statement, "id IN (?)"))
+	is.Equal(len(c.Variables), 1)
+}
+
+func TestNotIn(t *testing.T) {
+	is := is.New(t)
+	q := getURLQuery("https://httpbin.org/?id__nin=2,4,6")
+	c, _ := Clausify(q)
+	is.True(strings.Contains(c.Statement, "id NOT IN (?)"))
+	is.Equal(len(c.Variables), 1)
+}
