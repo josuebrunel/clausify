@@ -56,23 +56,22 @@ fmt.Printf("%v\n", c.Variables) // ["@toto.com", 24, "toto"]
 
 ## Implement a custom Operator
 
-Use a struct with a **Lookup** method to implement a custom operator.
+Use a struct implementing Clausifier interface with **Clausify** method as below
 
 ```go
 import (
     "github.com/josuebrunel/clausify"
-    "github.com/matryer/is"
     "net/url"
     "strings"
     "testing"
     "errors"
 )
 
-type MyOperator struct {
+type MyClausifier struct {
 	Separator string
 }
 
-func (m MyOperator) Lookup(k string, vv []string) (clause.Condition, error) {
+func (m MyClausifier) Clausify(k string, vv []string) (clause.Condition, error) {
 	op := strings.Split(k, m.Separator)
 	if op[1] == "<>" {
 		return clause.Condition{
@@ -85,7 +84,7 @@ func (m MyOperator) Lookup(k string, vv []string) (clause.Condition, error) {
 
 u, _ := url.Parse("https://httpbin.org/?id-<>=1")
 q := u.Query()
-c, _ := clausify.With(q, MyOperator{Separator: "-"})
+c, _ := clausify.With(q, MyClausifier{Separator: "-"})
 is.True(strings.Contains(c.Conditions, "id <> ?"))
 is.Equal(len(c.Variables), 1)
 ```
