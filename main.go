@@ -45,12 +45,20 @@ func (c *Clause) AddCondition(cond Condition) {
 	c.Variables = append(c.Variables, cond.Variables...)
 }
 
+var operators = map[string]string{
+	"eq": "=", "neq": "!=",
+	"gt": ">", "gte": ">=",
+	"lt": "<", "lte": "<=",
+	"in": "IN", "nin": "NOT IN",
+	"like": "LIKE", "ilike": "ILIKE", "nlike": "NOT LIKE",
+	"between": "BETWEEN", "nbetween": "NOT BETWEEN",
+}
+
 // QSClausifier is the default clausifier
 type QSClausifier struct {
-	Separator    string
-	NPlaceholder string
-	Placeholder  string
-	Operators    map[string]string
+	Separator   string
+	Placeholder string
+	Operators   map[string]string
 }
 
 // GetOperator returns the operator key
@@ -62,37 +70,25 @@ func (c QSClausifier) GetOperator(k string) (string, string) {
 	return k, "eq"
 }
 
-var operators = map[string]string{
-	"eq": "=", "neq": "!=",
-	"gt": ">", "gte": ">=",
-	"lt": "<", "lte": "<=",
-	"in": "IN", "nin": "NOT IN",
-	"like": "LIKE", "ilike": "ILIKE", "nlike": "NOT LIKE",
-	"between": "BETWEEN", "nbetween": "NOT BETWEEN",
-}
-
 // BuildCondition return condition variables with the right type
 func (c QSClausifier) BuildCondition(k string, o string, v string) Condition {
 	cond := Condition{}
-	var p string
 	var nv []interface{}
 	for _, e := range strings.Split(v, ",") {
 		if val, err := strconv.Atoi(e); err == nil {
-			p = c.NPlaceholder
 			nv = append(nv, val)
 			continue
 		}
-		p = c.Placeholder
 		nv = append(nv, e)
 	}
 	if strings.Contains(o, "IN") {
-		cond.Expression = concat(k, " ", o, " (", p, ")")
+		cond.Expression = concat(k, " ", o, " ", c.Placeholder)
 		cond.Variables = append(cond.Variables, nv)
 	} else {
 		if strings.Contains(o, "BETWEEN") {
-			cond.Expression = concat(k, " ", o, " ", p, " AND ", p)
+			cond.Expression = concat(k, " ", o, " ", c.Placeholder, " AND ", c.Placeholder)
 		} else {
-			cond.Expression = concat(k, " ", o, " ", p)
+			cond.Expression = concat(k, " ", o, " ", c.Placeholder)
 		}
 		cond.Variables = append(cond.Variables, nv...)
 	}
@@ -125,5 +121,5 @@ func With(q map[string][]string, cf Clausifier) (Clause, error) {
 // Clausify takes an url.Query and turns it into a Where clause conditions
 func Clausify(q map[string][]string) (Clause, error) {
 	return With(q, QSClausifier{
-		Separator: "__", Placeholder: "'?'", NPlaceholder: "?", Operators: operators})
+		Separator: "__", Operators: operators, Placeholder: "?"})
 }

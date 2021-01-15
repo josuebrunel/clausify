@@ -25,12 +25,12 @@ func TestEqual(t *testing.T) {
 	q := getURLQuery("https://httpbin.org/?username=josh")
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
-	is.Equal(c.Conditions, "username = '?'")
+	is.Equal(c.Conditions, "username = ?")
 	is.Equal(len(c.Variables), 1)
 	q = getURLQuery("https://httpbin.org/?username=josh&age=30")
 	c, _ = Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
-	is.Equal(strings.Contains(c.Conditions, "username = '?'"), true)
+	is.Equal(strings.Contains(c.Conditions, "username = ?"), true)
 	is.Equal(strings.Contains(c.Conditions, "age = ?"), true)
 	is.Equal(len(c.Variables), 2)
 }
@@ -40,12 +40,12 @@ func TestNotEqual(t *testing.T) {
 	q := getURLQuery("https://httpbin.org/?username__neq=josh")
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
-	is.Equal(c.Conditions, "username != '?'")
+	is.Equal(c.Conditions, "username != ?")
 	is.Equal(len(c.Variables), 1)
 	q = getURLQuery("https://httpbin.org/?username__neq=josh&age__neq=30")
 	c, _ = Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
-	is.Equal(strings.Contains(c.Conditions, "username != '?'"), true)
+	is.Equal(strings.Contains(c.Conditions, "username != ?"), true)
 	is.Equal(strings.Contains(c.Conditions, "age != ?"), true)
 	is.Equal(len(c.Variables), 2)
 }
@@ -56,7 +56,7 @@ func TestGreaterThan(t *testing.T) {
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
 	is.True(strings.Contains(c.Conditions, "price > ?"))
-	is.True(strings.Contains(c.Conditions, "name = '?'"))
+	is.True(strings.Contains(c.Conditions, "name = ?"))
 	is.Equal(len(c.Variables), 2)
 }
 
@@ -66,7 +66,7 @@ func TestGreaterThanEqual(t *testing.T) {
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
 	is.True(strings.Contains(c.Conditions, "price >= ?"))
-	is.True(strings.Contains(c.Conditions, "name = '?'"))
+	is.True(strings.Contains(c.Conditions, "name = ?"))
 	is.Equal(len(c.Variables), 2)
 }
 
@@ -76,7 +76,7 @@ func TestLessThan(t *testing.T) {
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
 	is.True(strings.Contains(c.Conditions, "price < ?"))
-	is.True(strings.Contains(c.Conditions, "name = '?'"))
+	is.True(strings.Contains(c.Conditions, "name = ?"))
 	is.Equal(len(c.Variables), 2)
 }
 
@@ -86,7 +86,7 @@ func TestLessThanEqual(t *testing.T) {
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
 	is.True(strings.Contains(c.Conditions, "price <= ?"))
-	is.True(strings.Contains(c.Conditions, "name = '?'"))
+	is.True(strings.Contains(c.Conditions, "name = ?"))
 	is.Equal(len(c.Variables), 2)
 }
 
@@ -96,7 +96,7 @@ func TestLike(t *testing.T) {
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
 	is.True(strings.Contains(c.Conditions, "price <= ?"))
-	is.True(strings.Contains(c.Conditions, "name LIKE '?'"))
+	is.True(strings.Contains(c.Conditions, "name LIKE ?"))
 	is.Equal(len(c.Variables), 2)
 }
 
@@ -106,7 +106,7 @@ func TestILike(t *testing.T) {
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
 	is.True(strings.Contains(c.Conditions, "price <= ?"))
-	is.True(strings.Contains(c.Conditions, "name ILIKE '?'"))
+	is.True(strings.Contains(c.Conditions, "name ILIKE ?"))
 	is.Equal(len(c.Variables), 3)
 }
 
@@ -116,7 +116,7 @@ func TestNotLike(t *testing.T) {
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
 	is.True(strings.Contains(c.Conditions, "price <= ?"))
-	is.True(strings.Contains(c.Conditions, "name NOT LIKE '?'"))
+	is.True(strings.Contains(c.Conditions, "name NOT LIKE ?"))
 	is.Equal(len(c.Variables), 2)
 }
 
@@ -125,7 +125,7 @@ func TestIn(t *testing.T) {
 	q := getURLQuery("https://httpbin.org/?id__in=2,4,6")
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
-	is.True(strings.Contains(c.Conditions, "id IN (?)"))
+	is.True(strings.Contains(c.Conditions, "id IN ?"))
 	is.Equal(len(c.Variables), 1)
 }
 
@@ -134,7 +134,7 @@ func TestNotIn(t *testing.T) {
 	q := getURLQuery("https://httpbin.org/?id__nin=2,4,6")
 	c, _ := Clausify(q)
 	log.Printf("%+v, %+v\n", c.Conditions, c.Variables)
-	is.True(strings.Contains(c.Conditions, "id NOT IN (?)"))
+	is.True(strings.Contains(c.Conditions, "id NOT IN ?"))
 	is.Equal(len(c.Variables), 1)
 }
 
