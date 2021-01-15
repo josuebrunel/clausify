@@ -79,8 +79,12 @@ func (c QSClausifier) BuildCondition(k string, o string, v string) Condition {
 			nv = append(nv, val)
 			continue
 		}
+		if strings.Contains(o, "LIKE") {
+			e = concat("%", e, "%")
+		}
 		nv = append(nv, e)
 	}
+	// edge cases
 	if strings.Contains(o, "IN") {
 		cond.Expression = concat(k, " ", o, " ", c.Placeholder)
 		cond.Variables = append(cond.Variables, nv)
