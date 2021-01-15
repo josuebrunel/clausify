@@ -54,6 +54,13 @@ fmt.Printf("%v\n", c.Variables) // ["@toto.com", 24, "toto"]
 | element__between=left,right               | element **BETWEEN** left **AND** right          |
 | element__nbetween=left,right              | element **NOT BETWEEN** left **AND** right      |
 
+## GORM Example
+
+```go
+c, _ = clausify.Clausify(u.Query())
+db.Where(c.Conditions, c.Variables...).Find(&p)
+```
+
 ## Implement a custom Operator
 
 Use a struct implementing Clausifier interface with **Clausify** method as below
