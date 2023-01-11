@@ -34,7 +34,7 @@ jobs:
     test-integration:
         strategy:
           matrix:
-            go-version: [1.13.x, 1.14.x, 1.15.x]
+            go-version: ['>=1.18.0']
             os: [ubuntu-latest,]
         runs-on: ${{ matrix.os }}
         services:
