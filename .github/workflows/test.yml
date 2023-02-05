@@ -75,7 +75,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
         - name: Pull new module version
-          run: go install github.com/josuebrunel/clausify
+          run: go install github.com/josuebrunel/clausify@latest
           env:
             GOPROXY: https://proxy.golang.org
             GO111MODULE: on
