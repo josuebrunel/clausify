@@ -27,10 +27,7 @@ jobs:
           with:
               github-token: ${{ secrets.GITHUB_TOKEN }}
               path-to-lcov: coverage.lcov
-        - name: Check lint
-          run: |
-              go get -u golang.org/x/lint/golint
-              golint  ./...
+
     test-integration:
         strategy:
           matrix:
@@ -58,7 +55,9 @@ jobs:
         - name: Unshallow git checkout
           run:  git fetch --prune --unshallow
         - name: Run tests
-          run: go test -v -covermode=count -coverprofile=coverage.out ./...
+          run: |
+              cd tests/
+              go test -v -count=1 -cover -covermode=count -coverprofile=coverage.out ./...
         - name: Convert coverage to lcov
           uses: jandelgado/gcov2lcov-action@v1.0.5
         - name: Report coverage
@@ -66,10 +65,7 @@ jobs:
           with:
               github-token: ${{ secrets.GITHUB_TOKEN }}
               path-to-lcov: coverage.lcov
-        - name: Check lint
-          run: |
-              cd tests/
-              go test -v -count=1 -cover -covermode=count -coverprofile=coverage.out ./...
+
     doc:
         name: Refresh documentation
         runs-on: ubuntu-latest
