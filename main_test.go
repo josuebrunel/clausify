@@ -1,4 +1,4 @@
-package clausify
+package main
 
 import (
 	"log"
