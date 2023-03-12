@@ -1,3 +1,3 @@
 module github.com/josuebrunel/clausify
 
-go 1.18
+go 1.20
